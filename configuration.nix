@@ -1,6 +1,33 @@
 { config, pkgs, options, ... }:
-{
-  imports = [ /etc/nixos/hardware-configuration.nix ];
+let
+  home-manager = builtins.fetchGit {
+    url = "https://github.com/rycee/home-manager.git";
+    rev = "8bbefa77f7e95c80005350aeac6fe425ce47c288";
+    ref = "master";
+  };
+in {
+  imports =
+    [ /etc/nixos/hardware-configuration.nix (import "${home-manager}/nixos") ];
+
+  # me!
+  users.users.djanatyn = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" "networkmanager" "docker" "video" "audio" ];
+    shell = pkgs.zsh;
+  };
+
+  home-manager.users.djanatyn = {
+    programs.git = {
+      enable = true;
+      userName = "djanatyn";
+      userEmail = "djanatyn@gmail.com";
+    };
+
+    services.gpg-agent = {
+      enable = true;
+      enableSshSupport = true;
+    };
+  };
 
   # allow unfree packages
   nixpkgs.config = {
@@ -229,10 +256,6 @@
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs.mtr.enable = true;
-  programs.gnupg.agent = {
-    enable = true;
-    enableSSHSupport = true;
-  };
 
   # Enable sound.
   sound.enable = true;
@@ -253,13 +276,6 @@
     enable = true;
     enableContribAndExtras = true;
     extraPackages = haskellPackages: [ haskellPackages.taffybar ];
-  };
-
-  # users
-  users.users.djanatyn = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "docker" "video" "audio" ];
-    shell = pkgs.zsh;
   };
 
   # allow sudo without password for wheel
