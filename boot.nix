@@ -1,4 +1,4 @@
-{ config, pkgs, ... }: {
+{ pkgs, ... }: {
   # use the latest kernel available
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
@@ -27,7 +27,4 @@
   # console config
   console.font = "Lat2-Terminus16";
   console.keyMap = "us";
-
-  # locale settings
-  i18n = { defaultLocale = "en_US.UTF-8"; };
 }

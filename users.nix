@@ -1,4 +1,4 @@
-{ config, pkgs, ... }: {
+{ pkgs, ... }: {
   users.users.djanatyn = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" "docker" "video" "audio" ];
