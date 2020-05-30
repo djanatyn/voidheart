@@ -1,6 +1,10 @@
 # voidheart
 nixos configuration for my desktop, named `voidheart`.
 
+<img src="static/desktop.png" align=center />
+
+----
+
 <img src="static/banner.png" align=center />
 
 # usage
