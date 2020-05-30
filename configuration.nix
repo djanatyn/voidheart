@@ -6,30 +6,16 @@ let
     ref = "master";
   };
 in {
-  imports =
-    [ /etc/nixos/hardware-configuration.nix (import "${home-manager}/nixos") ];
+  imports = [
+    /etc/nixos/hardware-configuration.nix
+    (import "${home-manager}/nixos")
+    ./boot.nix
+    ./network.nix
+    ./graphics.nix
+    ./wm.nix
+    ./users.nix
+  ];
 
-  # me!
-  users.users.djanatyn = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "docker" "video" "audio" ];
-    shell = pkgs.zsh;
-  };
-
-  home-manager.users.djanatyn = {
-    programs.git = {
-      enable = true;
-      userName = "djanatyn";
-      userEmail = "djanatyn@gmail.com";
-    };
-
-    services.gpg-agent = {
-      enable = true;
-      enableSshSupport = true;
-    };
-  };
-
-  # allow unfree packages
   nixpkgs.config = {
     allowUnfree = true;
     permittedInsecurePackages = [
@@ -38,67 +24,23 @@ in {
     ];
   };
 
-  # use the latest kernel available
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  i18n.defaultLocale = "en_US.UTF-8";
+  time.timeZone = "America/New_York";
 
-  # libvirtd (qemu)
-  virtualisation.libvirtd.enable = true;
-  boot.kernelModules = [ "kvm-amd" "kvm" ];
+  # gamecube adapter support
+  services.udev.extraRules = ''
+    # gamecube wii u usb adapter
+    ATTRS{idVendor}=="057e", ATTRS{idProduct}=="0337", MODE="666", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device" TAG+="uaccess"
+  '';
 
-  # investigate
-  hardware.enableRedistributableFirmware = true;
-
-  # opengl
-  hardware.opengl.enable = true;
-  hardware.opengl.driSupport = true;
-
-  # use amdgpu driver
-  services.xserver.videoDrivers = [ "amdgpu" ];
-
-  # vpn
-  services.openvpn.servers = {
-    expressvpn = { config = "config /root/nixos/openvpn/expressvpn.conf"; };
-  };
-
-  # support 32-bit steam application
-  hardware.opengl.driSupport32Bit = true;
-  hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
-  hardware.pulseaudio.support32Bit = true;
-
-  # boot options
-  boot.loader.grub.enable = true;
-  boot.loader.grub.version = 2;
-
-  # grub UEFI config
-  boot.loader.grub.efiSupport = true;
-  boot.loader.grub.efiInstallAsRemovable = true;
-  boot.loader.efi.efiSysMountPoint = "/boot";
-  boot.loader.grub.device = "nodev";
-  boot.loader.systemd-boot.enable = true;
-
-  # systemd
   systemd.coredump.enable = true;
 
-  # LUKS config
-  boot.initrd.luks.devices = {
-    root = {
-      device = "/dev/nvme0n1p2";
-      preLVM = true;
-    };
-  };
+  sound.enable = true;
+  hardware.pulseaudio.enable = true;
+  hardware.pulseaudio.support32Bit = true;
 
-  # networking
-  networking.hostName = "voidheart";
-  networking.useDHCP = false;
-  networking.interfaces.enp5s0.useDHCP = true;
-
-  # console config
-  console.font = "Lat2-Terminus16";
-  console.keyMap = "us";
-
-  # locale settings
-  i18n = { defaultLocale = "en_US.UTF-8"; };
-  time.timeZone = "America/New_York";
+  virtualisation.libvirtd.enable = true;
+  virtualisation.docker.enable = true;
 
   environment.systemPackages = with pkgs; [
     # network
@@ -244,47 +186,8 @@ in {
     dmenu
   ];
 
-  # enable docker
-  virtualisation.docker.enable = true;
-
-  # gamecube adapter support
-  services.udev.extraRules = ''
-    # gamecube wii u usb adapter
-    ATTRS{idVendor}=="057e", ATTRS{idProduct}=="0337", MODE="666", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device" TAG+="uaccess"
-  '';
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  programs.mtr.enable = true;
-
-  # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-  services.xserver.layout = "us";
-  services.xserver.xkbOptions = "ctrl:nocaps";
-
-  # desktopManager
-  services.xserver.displayManager.defaultSession = "none+xmonad";
-  services.xserver.desktopManager.xterm.enable = false;
-
-  # xmonad (nixos managed)
-  services.xserver.windowManager.openbox.enable = true;
-  services.xserver.windowManager.xmonad = {
-    enable = true;
-    enableContribAndExtras = true;
-    extraPackages = haskellPackages: [ haskellPackages.taffybar ];
-  };
-
-  # allow sudo without password for wheel
   security.sudo.wheelNeedsPassword = false;
 
-  # turn on local ssh
-  services.sshd.enable = true;
-
-  # started system at 19.09
   # (don't update unless you know what you're doing)
   system.stateVersion = "19.09";
 }
