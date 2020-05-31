@@ -4,6 +4,7 @@
 
   # enable kvm kernel modules
   boot.kernelModules = [ "kvm-amd" "kvm" ];
+  boot.extraModulePackages = with pkgs; [ linuxPackages_latest.v4l2loopback ];
 
   # boot options
   boot.loader.grub.enable = true;
