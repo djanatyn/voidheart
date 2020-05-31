@@ -16,6 +16,14 @@ in {
     ./users.nix
   ];
 
+  # nix configuration
+  # =================
+
+  nix.package = pkgs.nix;
+
+  # nixpkgs configuration
+  # =====================
+
   nixpkgs.config = {
     allowUnfree = true;
     permittedInsecurePackages = [
@@ -24,8 +32,16 @@ in {
     ];
   };
 
+  # nixos configuration
+  # ===================
+
+  # (don't update unless you know what you're doing)
+  system.stateVersion = "19.09";
+
   i18n.defaultLocale = "en_US.UTF-8";
   time.timeZone = "America/New_York";
+
+  security.sudo.wheelNeedsPassword = false;
 
   # gamecube adapter support
   services.udev.extraRules = ''
@@ -179,15 +195,10 @@ in {
     nitrogen
     arandr
     xmobar
-    scrot
     compton
+    maim
     xscreensaver
     rofi
-    dmenu
+    wmctrl
   ];
-
-  security.sudo.wheelNeedsPassword = false;
-
-  # (don't update unless you know what you're doing)
-  system.stateVersion = "19.09";
 }
