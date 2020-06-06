@@ -18,8 +18,8 @@ in {
 
   # nix configuration
   # =================
-
   nix.package = pkgs.nix;
+  services.lorri.enable = true;
 
   # nixpkgs configuration
   # =====================
@@ -142,6 +142,7 @@ in {
     vim
 
     # development
+    direnv
     gdb
     git
     gist
