@@ -5,6 +5,16 @@ let
     rev = "8bbefa77f7e95c80005350aeac6fe425ce47c288";
     ref = "master";
   };
+  overlay = self: super: {
+    discord-canary = super.discord-canary.overrideAttrs (old: rec {
+      version = "0.0.104";
+      src = pkgs.fetchurl {
+        sha256 = "17np1hqqygjlbmlln0d1ba2qlbjykwj156w5dw7g4lg77kfxicfk";
+        url =
+          "https://dl-canary.discordapp.net/apps/linux/${version}/discord-canary-${version}.tar.gz";
+      };
+    });
+  };
 in {
   imports = [
     /etc/nixos/hardware-configuration.nix
@@ -24,6 +34,7 @@ in {
   # nixpkgs configuration
   # =====================
 
+  nixpkgs.overlays = [ overlay ];
   nixpkgs.config = {
     allowUnfree = true;
     permittedInsecurePackages = [
