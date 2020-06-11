@@ -135,7 +135,7 @@ in {
     ansible-lint
 
     # chat
-    discord-canary
+    discord-ptb
     spectral
 
     # torrent
